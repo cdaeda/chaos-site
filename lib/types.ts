@@ -17,6 +17,7 @@ export type Production = {
   ticket_url: string | null;
   date_range: string | null;
   has_microsite: boolean;
+  cast_is_sample: boolean;
   sort_order: number;
   created_at: string;
 };

@@ -1,6 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
 import type { ProductionWithDetails, Person } from "@/lib/types";
 
+/** Sort a production's embedded showtimes (chronologically) and cast (by order). */
+function sortDetails(p: ProductionWithDetails): ProductionWithDetails {
+  return {
+    ...p,
+    showtimes: [...(p.showtimes ?? [])].sort((a, b) =>
+      a.starts_at < b.starts_at ? -1 : a.starts_at > b.starts_at ? 1 : 0,
+    ),
+    cast_members: [...(p.cast_members ?? [])].sort(
+      (a, b) => a.sort_order - b.sort_order,
+    ),
+  };
+}
+
 /**
  * Fetch all season productions with their showtimes and cast.
  * Returns [] if Supabase isn't configured yet (so the site still renders).
@@ -18,7 +31,7 @@ export async function getProductions(): Promise<ProductionWithDetails[]> {
     console.error("getProductions:", error.message);
     return [];
   }
-  return (data ?? []) as ProductionWithDetails[];
+  return ((data ?? []) as ProductionWithDetails[]).map(sortDetails);
 }
 
 export async function getProductionBySlug(
@@ -37,7 +50,7 @@ export async function getProductionBySlug(
     console.error("getProductionBySlug:", error.message);
     return null;
   }
-  return data as ProductionWithDetails;
+  return sortDetails(data as ProductionWithDetails);
 }
 
 export async function getPeople(group?: string): Promise<Person[]> {

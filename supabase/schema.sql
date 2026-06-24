@@ -28,6 +28,8 @@ create table if not exists public.productions (
   ticket_url    text,
   date_range    text,                              -- human label, e.g. "July 13–24"
   has_microsite boolean not null default false,
+  cast_is_sample boolean not null default false,   -- show "sample cast" note
+
   sort_order    int not null default 0,
   created_at    timestamptz not null default now()
 );
